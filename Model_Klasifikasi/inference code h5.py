@@ -3,17 +3,18 @@ import pandas as pd
 import tensorflow as tf
 import joblib
 from sklearn.preprocessing import StandardScaler
+# install all libraries first
 
 # Load the trained model
-save_model_path = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir/Program/model_ann_8/modelann91.h5'  # Sesuaikan dengan path model yang disimpan
+save_model_path = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir/Program/model_ann_8/modelann91.h5'  # change to saved model path
 model = tf.keras.models.load_model(save_model_path)
 
 # Load the scaler
-scaler_path = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Program\model_ann_8/scaler91.pkl'  # Sesuaikan dengan path scaler yang disimpan
+scaler_path = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Program\model_ann_8/scaler91.pkl'  # change to saved scaler path
 scaler = joblib.load(scaler_path)
 
 # Load and preprocess new data for inference
-url_new_data = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Hasil Klasifikasi\HasilOlahDataDuduk-oldmean.xlsx'  # Path to the new dataset for inference
+url_new_data = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Hasil Klasifikasi New\HasilOlahDataDuduk-New.xlsx'  # change to input data path
 data_new = pd.read_excel(url_new_data)
 
 # Split features and target
@@ -44,6 +45,6 @@ print(y_pred_labels_new)
 data_new['Klasifikasi Model'] = y_pred_labels_new
 
 # Save the DataFrame to an Excel file
-output_file = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Hasil Klasifikasi/hasil_prediksi_oldmean.xlsx'  # Sesuaikan dengan path yang diinginkan
+output_file = 'C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Hasil Klasifikasi New/hasil_prediksi.xlsx'  # change to the desired path
 data_new.to_excel(output_file, index=False)
 print(f"Hasil prediksi telah disimpan ke {output_file}")
