@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 import scipy.signal
 import math
 import neurokit2 as nk
+#install all libraries first
 
 # Load data
-
-# dataset = pd.read_csv("C:\\Users/galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Perekaman 40 Data Tambahan\Perekaman 29 september 2024 (14)/yuyu wahyudi lari\Data_8_Raw.csv", names=['I-mV', 'II-mV', 'V1-mV'], sep=',', skiprows=1, skipfooter=0, dtype=float)
-dataset = pd.read_csv("C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead/3 Agustus 2024/aesan\Data_3_Raw.csv", names=['I-mV', 'II-mV', 'V1-mV'], sep=',', skiprows=1, skipfooter=0, dtype=float)
-# dataset = pd.read_csv("C:/Users/galvi\Documents\Kuliah\Tugas Akhir\Data\Dataset/1-5492/NORM/00005_lr_deleted.csv", names=['I-mV', 'II-mV', 'V1-mV'], sep=',', skiprows=1, skipfooter=0, dtype=float)
+dataset = pd.read_csv(r"C:\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\3 Agustus 2024\aesan_duduk\Data_2_converted.csv", names=['I-mV', 'II-mV', 'V1-mV'], sep=',', skiprows=1, skipfooter=0, dtype=float)
 t = (np.arange(0, len(dataset)))
+#change the path to your dataset path for input
+
+#start the program
 
 # Preprocessing and plotting for each lead
 for lead in ['I-mV', 'II-mV', 'V1-mV']:
@@ -66,12 +67,12 @@ for lead in ['I-mV', 'II-mV', 'V1-mV']:
 
     nyq_rate = Fsf / 2
     width = 2.0 / nyq_rate
-    attenuaton_db = 60.0
-    O, beta = scipy.signal.kaiserord(attenuaton_db, width)
+    attenuation_db = 60.0
+    O, beta = scipy.signal.kaiserord(attenuation_db, width)
     if O % 2 == 0:
         O += 1
     else:
-        O, beta = scipy.signal.kaiserord(attenuaton_db, width)
+        O, beta = scipy.signal.kaiserord(attenuation_db, width)
 
     taps = scipy.signal.firwin(O, cutoff_hz/nyq_rate, window=('kaiser', beta), pass_zero=False)
     y_filt = scipy.signal.lfilter(taps, 1.0, tempf_butter)
@@ -325,25 +326,31 @@ for lead in ['I-mV', 'II-mV', 'V1-mV']:
         print('II_mV - BPM:', bpm)
         plt.figure(figsize=(10, 6))
         plt.title(f'Electrocardiogram Signal ({lead}) - PQRST Peaks Detection')
-        plt.plot(t, y_filt, color='orange', label="Filtered Data")
-        plt.plot(rpeaks['ECG_R_Peaks'], y_filt[rpeaks['ECG_R_Peaks']], "x", color='black', label="R Peak")
+        plt.plot(y_filt, color='orange', label="Filtered Data")
         plt.plot(waves_dwt['ECG_P_Peaks'], y_filt[waves_dwt['ECG_P_Peaks']], "x", color='blue', label="P Peak")
+        plt.plot(waves_dwt['ECG_P_Onsets'], y_filt[waves_dwt['ECG_P_Onsets']], "o", color='blue', label="P Onset")
+        plt.plot(waves_dwt['ECG_P_Offsets'], y_filt[waves_dwt['ECG_P_Offsets']], "o", color='blue', label="P Offset")
         plt.plot(waves_dwt['ECG_Q_Peaks'], y_filt[waves_dwt['ECG_Q_Peaks']], "x", color='green', label="Q Peak")
+        plt.plot(rpeaks['ECG_R_Peaks'], y_filt[rpeaks['ECG_R_Peaks']], "x", color='black', label="R Peak")
+        plt.plot(waves_dwt['ECG_R_Onsets'], y_filt[waves_dwt['ECG_R_Onsets']], "o", color='black', label="R Onset")
+        plt.plot(waves_dwt['ECG_R_Offsets'], y_filt[waves_dwt['ECG_R_Offsets']], "o", color='black', label="R Offset")
         plt.plot(waves_dwt['ECG_S_Peaks'], y_filt[waves_dwt['ECG_S_Peaks']], "x", color='red', label="S Peak")
         plt.plot(waves_dwt['ECG_T_Peaks'], y_filt[waves_dwt['ECG_T_Peaks']], "x", color='purple', label="T Peak")
+        plt.plot(waves_dwt['ECG_T_Onsets'], y_filt[waves_dwt['ECG_T_Onsets']], "o", color='purple', label="T Onset")
+        plt.plot(waves_dwt['ECG_T_Offsets'], y_filt[waves_dwt['ECG_T_Offsets']], "o", color='purple', label="T Offset")
         plt.xlabel('Time [ms]')
         plt.ylabel('Amplitude [mV]')
         plt.legend(loc="lower left")
         for i, j in zip(waves_dwt['ECG_P_Peaks'], y_filt[waves_dwt['ECG_P_Peaks']]):
-            plt.annotate('P', xy=((i*20), j))
+            plt.annotate('P', xy=(i, j))
         for i, j in zip(waves_dwt['ECG_Q_Peaks'], y_filt[waves_dwt['ECG_Q_Peaks']]):
-            plt.annotate('Q', xy=((i*20), j))
+            plt.annotate('Q', xy=(i, j))
         for i, j in zip(rpeaks['ECG_R_Peaks'], y_filt[rpeaks['ECG_R_Peaks']]):
-            plt.annotate('R', xy=((i*20), j))
+            plt.annotate('R', xy=(i, j))
         for i, j in zip(waves_dwt['ECG_S_Peaks'], y_filt[waves_dwt['ECG_S_Peaks']]):
-            plt.annotate('S', xy=((i*20), j))
+            plt.annotate('S', xy=(i, j))
         for i, j in zip(waves_dwt['ECG_T_Peaks'], y_filt[waves_dwt['ECG_T_Peaks']]):
-            plt.annotate('T', xy=((i*20), j))
+            plt.annotate('T', xy=(i, j))
 
     elif lead == 'I-mV':
         
@@ -457,19 +464,21 @@ packedData = {
            }
 
 # first input
+# use this to save the first input data
 # df = pd.DataFrame([packedData])
-# df.to_excel("C:\\Users/galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Perekaman 40 Data Tambahan\Perekaman 29 september 2024 (14)/yuyu wahyudi lari\HasilOlahData.xlsx", index=False)
+# df.to_excel(r"C:\\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\3 Agustus 2024/aesan_duduk/HasilOlahDatax.xlsx", index=False)
 # print(packedData)
 
 #new data
+# use this to save next new data
 # df = pd.DataFrame([packedData])
-# filepath = r'C:\\Users/galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Perekaman 40 Data Tambahan\Perekaman 29 september 2024 (14)/yuyu wahyudi lari/HasilOlahData.xlsx'
+# filepath = r'C:\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\3 Agustus 2024\aesan_duduk/HasilOlahDatax.xlsx'
 # with pd.ExcelWriter(
 #         filepath,
 #         engine='openpyxl',
 #         mode='a',
 #         if_sheet_exists='overlay') as writer:
-#     reader = pd.read_excel('C:\\Users/galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\Perekaman 40 Data Tambahan\Perekaman 29 september 2024 (14)/yuyu wahyudi lari\HasilOlahData.xlsx')
+#     reader = pd.read_excel(r'C:\Users\galvi\Documents\Kuliah\Tugas Akhir\Data\Hasil Perekaman Alat 5 lead\3 Agustus 2024\aesan_duduk\HasilOlahDatax.xlsx')
 #     df.to_excel(
 #         writer,
 #         startrow=reader.shape[0] + 1,
